@@ -11,7 +11,7 @@ export function Header() {
                 tarefas<span>+</span> 
             </h1>
           </Link>
-          <Link href="/deshboard" className={styles.link}>
+          <Link href="/dashboard" className={styles.link}>
             Meu Painel 
           </Link>
         </nav>
