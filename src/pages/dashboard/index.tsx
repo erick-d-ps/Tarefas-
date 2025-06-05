@@ -3,6 +3,7 @@ import styles from "./styles.module.css";
 import Head from "next/head";
 
 import { getSession } from "next-auth/react";
+import { Textarea } from "@/src/components/textarea";
 
 export default function Dashboard() {
   return (
@@ -11,7 +12,23 @@ export default function Dashboard() {
         <title>Meu painel de tarefas</title>
       </Head>
 
-      <h1>Pagina painel</h1>
+      <main className={styles.main}>
+        <section className={styles.content}>
+          <div className={styles.contentForm}>
+            <h1 className={styles.title}>Qual sua Tarefa?</h1>
+            <form>
+              <Textarea placeholder="Digit qual sua tarefa..." />
+              <div className={styles.checboxarea}>
+                <input type="checkbox" className={styles.chackbox} />
+                <label>Deixar tarefa publica?</label>
+              </div>
+              <button className={styles.button} type="submit">
+                Registrar
+              </button>
+            </form>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
@@ -22,7 +39,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
   if (!session?.user) {
     return {
-      redirect: { 
+      redirect: {
         destination: "/",
         permanent: false,
       },
