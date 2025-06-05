@@ -13,7 +13,7 @@ export function Header() {
         <nav className={styles.nav}>
           <Link href="/">
             <h1 className={styles.logo}>
-                tarefas<span>+</span> 
+                Tarefas<span>plus</span> 
             </h1>
           </Link>
           { session?.user && (
