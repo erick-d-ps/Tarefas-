@@ -15,7 +15,9 @@ import {
   getDoc,
   addDoc,
   getDocs,
+  deleteDoc,
 } from "firebase/firestore";
+import { FaTrash } from "react-icons/fa";
 
 interface TaskProps {
   item: {
@@ -25,21 +27,21 @@ interface TaskProps {
     user: string;
     taskId: string;
   };
-  allComments: CommentsProps[],
+  allComments: CommentsProps[];
 }
 
-interface CommentsProps{
-  id: string,
-  comment: string,
-  name: string,
-  user: string,
-  taskId: string, 
+interface CommentsProps {
+  id: string;
+  comment: string;
+  name: string;
+  user: string;
+  taskId: string;
 }
 
 export default function Task({ item, allComments }: TaskProps) {
   const [input, setInput] = useState("");
   const { data: session } = useSession();
-  const [comments, setCopmments] = useState<CommentsProps[]>(allComments || [])
+  const [comments, setCopmments] = useState<CommentsProps[]>(allComments || []);
 
   async function handleComent(event: FormEvent) {
     event.preventDefault;
@@ -47,17 +49,41 @@ export default function Task({ item, allComments }: TaskProps) {
     if (input && "") return;
 
     if (!session?.user?.email || !session?.user?.name) return;
-    
 
     try {
-      const docRef = await addDoc(collection(db, "comments"), { 
+      const docRef = await addDoc(collection(db, "comments"), {
         comment: input,
         created: new Date(),
         nome: session?.user?.name,
         user: session?.user?.email,
         taskId: item?.taskId,
       });
+
+      const data = {
+        id: docRef.id,
+        comment: input,
+        user: session?.user?.email,
+        name: session?.user.name,
+        taskId: item.taskId,
+      };
+
+      setCopmments((oldItems) => [...oldItems, data]);
+
       setInput("");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function handleDeletComment(id: string) { 
+    try {
+      const docRef = doc(db, "comments", id); 
+      await deleteDoc(docRef);
+      const deleCommet = comments.filter((item) => item.id !== id)
+      
+      setCopmments(deleCommet)
+
+      
     } catch (err) {
       console.log(err);
     }
@@ -92,7 +118,7 @@ export default function Task({ item, allComments }: TaskProps) {
           </button>
         </form>
       </section>
-      
+
       <section className={styles.comentsContainer}>
         <h2>Todos comentários</h2>
         {comments.length === 0 && (
@@ -101,6 +127,19 @@ export default function Task({ item, allComments }: TaskProps) {
 
         {comments.map((item) => (
           <article key={item.id} className={styles.comment}>
+            <div className={styles.headcomments}>
+              <label className={styles.commentsLabel}>{item.name}</label>
+
+              {item.user === session?.user?.email && (
+
+                <button
+                  className={styles.buttonTrash}
+                  onClick={() => handleDeletComment(item.id) }
+                >
+                  <FaTrash size={18} color="#EA3140" />
+                </button>
+              )}
+            </div>
             <p>{item.comment}</p>
           </article>
         ))}
@@ -116,9 +155,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   const q = query(collection(db, "comments"), where("taskId", "==", id));
 
-  const snapshotComments = await getDocs(q)
+  const snapshotComments = await getDocs(q);
 
-  let allComments: CommentsProps[] = []
+  let allComments: CommentsProps[] = [];
   snapshotComments.forEach((doc) => {
     allComments.push({
       id: doc.id,
@@ -126,10 +165,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       name: doc.data().nome,
       taskId: doc.data().taskId,
       user: doc.data().user,
-    })
-  })
+    });
+  });
 
-  
   const snapshot = await getDoc(docRef);
 
   if (snapshot.data() === undefined) {
