@@ -3,6 +3,7 @@ import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import styles from "./styles.module.css";
 import Head from "next/head";
 import Link from "next/link";
+import toast, { Toast } from "react-hot-toast";
 
 import { getSession } from "next-auth/react";
 import { Textarea } from "@/src/components/textarea";
@@ -85,7 +86,7 @@ export default function Dashboard({ user }: HomeProps) {
         public: publicTask,
       });
 
-      alert("Registrado com sucesso!!");
+      toast.success("Tarefa cadastrada!")
 
       setInput("");
       setPublicTask(false);
@@ -98,12 +99,14 @@ export default function Dashboard({ user }: HomeProps) {
     await navigator.clipboard.writeText(
       `${process.env.NEXT_PUBLIC_URL}/task/${id}`
     )
-    alert("URL copiada com sucesso!!")
+    toast.success("URL copiado com sucesso!!")
   }
 
   async function handleDeletTask(id: string) {
     const docRef = doc(db, "tarefas", id);
     await deleteDoc(docRef);
+
+    toast.error("Tarefa deletada!")
   }
 
 

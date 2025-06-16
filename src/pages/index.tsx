@@ -41,7 +41,7 @@ export default function Home({comments, posts}: HomeProps) {
             </section>
 
             <section className={styles.box}>
-              <span>+ {comments} comentarios</span>
+              <span>+ {comments} comentários</span>
             </section>
 
           </div>

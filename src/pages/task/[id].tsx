@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import styles from "./styles.module.css";
+import toast, { Toast } from "react-hot-toast";
 
 import { Textarea } from "../../components/textarea";
 
@@ -69,6 +70,7 @@ export default function Task({ item, allComments }: TaskProps) {
 
       setCopmments((oldItems) => [...oldItems, data]);
 
+      toast.success("Comentario enviado!")
       setInput("");
     } catch (err) {
       console.log(err);
@@ -81,6 +83,7 @@ export default function Task({ item, allComments }: TaskProps) {
       await deleteDoc(docRef);
       const deleCommet = comments.filter((item) => item.id !== id)
       
+      toast.error("Comentario deletado!")
       setCopmments(deleCommet)
 
       
